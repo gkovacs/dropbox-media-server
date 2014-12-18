@@ -151,7 +151,7 @@ sendhtml = (res, sometext) ->
   <body>
   #{sometext}
   </body>
-  </html
+  </html>
   """
 
 app.get '/', (req, res) ->
@@ -216,6 +216,8 @@ app.get '/account', (req, res) ->
       res.send JSON.stringify reply
 */
 
+root.cached_paths = {}
+
 app.get /^\/file\/(.+)/, (req, res) ->
   # this allow subdirectories, is /file/foo/bar.txt
   # if wanted just flat files, would use '/file/:filename'
@@ -223,11 +225,15 @@ app.get /^\/file\/(.+)/, (req, res) ->
   if not filename? or filename.length == 0
     res.send 'need filename'
     return
+  if root.cached_paths[filename]? and new Date(root.cached_paths[filename].expires).getTime() > Date.now() # not expired yet
+    res.redirect root.cached_paths[filename].url
+    return
   getclient (dclient) ->
     if not dclient?
       res.send 'need to login first'
       return
     dclient.media '/' + filename, (status, reply) ->
       #console.log reply
+      root.cached_paths[filename] = reply
       res.redirect reply.url
 

@@ -175,7 +175,7 @@
   };
   sendhtml = function(res, sometext){
     res.set('Content-Type', 'text/html');
-    return res.send("<html>\n<head></head>\n<body>\n" + sometext + "\n</body>\n</html");
+    return res.send("<html>\n<head></head>\n<body>\n" + sometext + "\n</body>\n</html>");
   };
   app.get('/', function(req, res){
     return getclient(function(dclient){
@@ -249,11 +249,16 @@
       dclient.account (status, reply) ->
         res.send JSON.stringify reply
   */
+  root.cached_paths = {};
   app.get(/^\/file\/(.+)/, function(req, res){
     var filename;
     filename = req.params[0];
     if (filename == null || filename.length === 0) {
       res.send('need filename');
+      return;
+    }
+    if (root.cached_paths[filename] != null && new Date(root.cached_paths[filename].expires).getTime() > Date.now()) {
+      res.redirect(root.cached_paths[filename].url);
       return;
     }
     return getclient(function(dclient){
@@ -262,6 +267,7 @@
         return;
       }
       return dclient.media('/' + filename, function(status, reply){
+        root.cached_paths[filename] = reply;
         return res.redirect(reply.url);
       });
     });
