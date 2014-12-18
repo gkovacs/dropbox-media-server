@@ -14,11 +14,16 @@ Create a new app on Heroku: https://dashboard.heroku.com/apps
 
 Add either MongoHQ https://addons.heroku.com/mongohq or MongoLab https://addons.heroku.com/mongolab to the app
 
-Deploy this repository to heroku via git push
+Deploy this repository to Heroku via git push:
+
+    git clone https://github.com/gkovacs/dropbox-media-server
+    cd dropbox-media-server
+    git remote add myapp git@heroku.com:myapp.git
+    git push myapp master
 
 Create a new app on Dropbox: https://www.dropbox.com/developers/apps
 
-Visit your site, specify the app\_key and app\_secret, add some files
+Visit your site, specify the app\_key and app\_secret, give it authorization, add some files to the Dropbox folder at Dropbox/Apps/myapp
 
 ## Features
 
