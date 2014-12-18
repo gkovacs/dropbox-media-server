@@ -10,9 +10,9 @@ This is a node.js server you can run on Heroku that exposes a directory without 
 
 ## Deploying on Heroku
 
-Create a new app on Heroku: https://dashboard.heroku.com/apps
+Create a new app on [Heroku](https://dashboard.heroku.com/apps)
 
-Add either MongoHQ https://addons.heroku.com/mongohq or MongoLab https://addons.heroku.com/mongolab to the app
+Add either [MongoHQ](https://addons.heroku.com/mongohq) or [MongoLab](https://addons.heroku.com/mongolab) to the app
 
 Deploy this repository to Heroku via git push:
 
@@ -21,7 +21,7 @@ Deploy this repository to Heroku via git push:
     git remote add myapp git@heroku.com:myapp.git
     git push myapp master
 
-Create a new app on Dropbox: https://www.dropbox.com/developers/apps
+Create a new app on [Dropbox](https://www.dropbox.com/developers/apps)
 
 Visit your site, specify the app\_key and app\_secret, give it authorization, add some files to the Dropbox folder at Dropbox/Apps/myapp
 
@@ -32,3 +32,11 @@ To list the files: /listfiles
 To access a file: /file/path/to/file.txt
 
 To see if mongo db has an error: /mongostatus
+
+## License
+
+MIT License
+
+## Contact
+
+[Geza Kovacs](http://www.gkovacs.com/)
