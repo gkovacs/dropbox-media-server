@@ -155,7 +155,7 @@
   app.get('/', function(req, res){
     return getclient(function(dclient){
       if (dclient != null) {
-        sendhtml(res, 'Powered by DropboxMediaServer');
+        sendhtml(res, 'Powered by <a href="https://github.com/gkovacs/dropbox-media-server">Dropbox Media Server</a>');
         return;
       }
       return get_app_key_secret(function(app_key_secret){

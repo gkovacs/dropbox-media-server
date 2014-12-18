@@ -137,7 +137,7 @@ sendhtml = (res, sometext) ->
 app.get '/', (req, res) ->
   getclient (dclient) ->
     if dclient?
-      sendhtml res, 'Powered by DropboxMediaServer'
+      sendhtml res, 'Powered by <a href="https://github.com/gkovacs/dropbox-media-server">Dropbox Media Server</a>'
       return
     get_app_key_secret (app_key_secret) ->
       if not app_key_secret?
