@@ -4,7 +4,7 @@ Node.js server that serves a public folder of media files on Dropbox
 
 ## Why
 
-Dropbox is a great means of hosting large files, but you can share only individual files, not links - the URLs are obfuscated for files within folders.
+Dropbox is a great means of hosting large files, but you can share only individual files, not individual links for a directory of files - the URLs for files are obfuscated for within folders.
 
 This is a node.js server you can run on Heroku that exposes a directory without obfuscated paths, and redirects you to the appropriate file on Dropbox whenever you try to access a file.
 
