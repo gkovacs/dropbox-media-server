@@ -1,4 +1,4 @@
-# DropboxMediaServer
+# Dropbox Media Server
 
 Node.js server that serves a public folder of media files on Dropbox
 
