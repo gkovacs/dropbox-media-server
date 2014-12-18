@@ -1,0 +1,27 @@
+{
+  "name": "dropboxmediaserver",
+  "version": "1.0.0",
+  "description": "Node.js server that serves a public folder of media files on Dropbox",
+  "main": "app.js",
+  "dependencies": {
+    "mongodb": "^1.4.23",
+    "dbox": "^0.6.3",
+    "express": "^4.10.6"
+  },
+  "devDependencies": {
+    "LiveScript": "^1.3.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gkovacs/dropbox-media-server"
+  },
+  "author": "Geza Kovacs",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gkovacs/dropbox-media-server/issues"
+  },
+  "homepage": "https://github.com/gkovacs/dropbox-media-server"
+}
