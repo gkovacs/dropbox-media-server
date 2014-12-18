@@ -1,0 +1,3 @@
+#!/bin/bash
+
+for x in `git remote show`; do git push "$x" master; done
