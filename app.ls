@@ -9,7 +9,7 @@ require! {
 
 app = express()
 
-app.set 'port', (process.env.PORT || 5001)
+app.set 'port', (process.env.PORT || 5000)
 app.listen app.get('port'), '0.0.0.0'
 console.log 'Listening on port ' + app.get('port')
 
@@ -30,40 +30,60 @@ get-mongo-db = (callback) ->
   MongoClient.connect mongourl, (err, db) ->
     if err
       console.log 'error getting mongodb'
+      callback null
     else
       callback db
 
 get-dropboxmedia-collection = (callback) ->
   get-mongo-db (db) ->
+    if not db?
+      callback null, null
+      return
     callback db.collection('dropboxmedia'), db
 
 get-access-token-mongo = (callback) ->
-  get-dropboxmedia-collection (collection) ->
+  get-dropboxmedia-collection (collection, db) ->
+    if not db?
+      callback null
+      return
     collection.findOne {_id: 'accesstoken'}, (err, result) ->
       if not result?
         callback null
-        return
-      callback JSON.parse(result.accesstoken)
+      else
+        callback JSON.parse(result.accesstoken)
+      db.close()
 
 save-access-token-mongo = (new-access-token, callback) ->
-  get-dropboxmedia-collection (collection) ->
+  get-dropboxmedia-collection (collection, db) ->
+    if not db?
+      callback null
+      return
     collection.save {_id: 'accesstoken', accesstoken: JSON.stringify(new-access-token)}, (err, result) ->
       if callback?
         callback()
+      db.close()
 
 get-app-key-secret-mongo = (callback) ->
-  get-dropboxmedia-collection (collection) ->
+  get-dropboxmedia-collection (collection, db) ->
+    if not db?
+      callback null
+      return
     collection.findOne {_id: 'appkeysecret'}, (err, result) ->
       if not result?
         callback null
         return
       callback JSON.parse(result.appkeysecret)
+      db.close()
 
 save-app-key-secret-mongo = (new-app-key-secret, callback) ->
-  get-dropboxmedia-collection (collection) ->
+  get-dropboxmedia-collection (collection, db) ->
+    if not db?
+      callback null
+      return
     collection.save {_id: 'appkeysecret', appkeysecret: JSON.stringify(new-app-key-secret)}, (err, result) ->
       if callback?
         callback()
+      db.close()
 
 # global variables
 
@@ -168,6 +188,13 @@ app.get '/', (req, res) ->
                 clearInterval root.checkauthorizedprocess
                 save-access-token-mongo(root.access_token)
           , 1000
+
+app.get '/mongostatus', (req, res) ->
+  get-mongo-db (db) ->
+    if db?
+      res.send 'mongo ok'
+    else
+      res.send 'mongo not working'
 
 app.get '/listfiles', (req, res) ->
   getclient (dclient) ->

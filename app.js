@@ -5,7 +5,7 @@
   express = require('express');
   dbox = require('dbox');
   app = express();
-  app.set('port', process.env.PORT || 5001);
+  app.set('port', process.env.PORT || 5000);
   app.listen(app.get('port'), '0.0.0.0');
   console.log('Listening on port ' + app.get('port'));
   mongo = require('mongodb');
@@ -20,7 +20,8 @@
   getMongoDb = function(callback){
     return MongoClient.connect(mongourl, function(err, db){
       if (err) {
-        return console.log('error getting mongodb');
+        console.log('error getting mongodb');
+        return callback(null);
       } else {
         return callback(db);
       }
@@ -28,36 +29,54 @@
   };
   getDropboxmediaCollection = function(callback){
     return getMongoDb(function(db){
+      if (db == null) {
+        callback(null, null);
+        return;
+      }
       return callback(db.collection('dropboxmedia'), db);
     });
   };
   getAccessTokenMongo = function(callback){
-    return getDropboxmediaCollection(function(collection){
+    return getDropboxmediaCollection(function(collection, db){
+      if (db == null) {
+        callback(null);
+        return;
+      }
       return collection.findOne({
         _id: 'accesstoken'
       }, function(err, result){
         if (result == null) {
           callback(null);
-          return;
+        } else {
+          callback(JSON.parse(result.accesstoken));
         }
-        return callback(JSON.parse(result.accesstoken));
+        return db.close();
       });
     });
   };
   saveAccessTokenMongo = function(newAccessToken, callback){
-    return getDropboxmediaCollection(function(collection){
+    return getDropboxmediaCollection(function(collection, db){
+      if (db == null) {
+        callback(null);
+        return;
+      }
       return collection.save({
         _id: 'accesstoken',
         accesstoken: JSON.stringify(newAccessToken)
       }, function(err, result){
         if (callback != null) {
-          return callback();
+          callback();
         }
+        return db.close();
       });
     });
   };
   getAppKeySecretMongo = function(callback){
-    return getDropboxmediaCollection(function(collection){
+    return getDropboxmediaCollection(function(collection, db){
+      if (db == null) {
+        callback(null);
+        return;
+      }
       return collection.findOne({
         _id: 'appkeysecret'
       }, function(err, result){
@@ -65,19 +84,25 @@
           callback(null);
           return;
         }
-        return callback(JSON.parse(result.appkeysecret));
+        callback(JSON.parse(result.appkeysecret));
+        return db.close();
       });
     });
   };
   saveAppKeySecretMongo = function(newAppKeySecret, callback){
-    return getDropboxmediaCollection(function(collection){
+    return getDropboxmediaCollection(function(collection, db){
+      if (db == null) {
+        callback(null);
+        return;
+      }
       return collection.save({
         _id: 'appkeysecret',
         appkeysecret: JSON.stringify(newAppKeySecret)
       }, function(err, result){
         if (callback != null) {
-          return callback();
+          callback();
         }
+        return db.close();
       });
     });
   };
@@ -193,6 +218,15 @@
           });
         });
       });
+    });
+  });
+  app.get('/mongostatus', function(req, res){
+    return getMongoDb(function(db){
+      if (db != null) {
+        return res.send('mongo ok');
+      } else {
+        return res.send('mongo not working');
+      }
     });
   });
   app.get('/listfiles', function(req, res){
