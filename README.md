@@ -12,7 +12,7 @@ This is a node.js server you can run on Heroku that exposes a directory without 
 
 Create a new app on [Heroku](https://dashboard.heroku.com/apps)
 
-Add either [MongoHQ](https://addons.heroku.com/mongohq) or [MongoLab](https://addons.heroku.com/mongolab) to the app
+Add either [MongoHQ](https://addons.heroku.com/mongohq) or [MongoLab](https://addons.heroku.com/mongolab) or [MongoSoup](https://addons.heroku.com/mongosoup) to the app
 
 Deploy this repository to Heroku via git push:
 

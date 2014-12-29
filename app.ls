@@ -13,16 +13,17 @@ app.set 'port', (process.env.PORT || 5000)
 app.listen app.get('port'), '0.0.0.0'
 console.log 'Listening on port ' + app.get('port')
 
+# http basic authentication
+
+#if process.env.AUTH_USERNAME? process.env.AUTH_PASSWORD?
+#  require! 'http-auth'
+
 # mongo setup
 
 mongo = require 'mongodb'
 {MongoClient} = mongo
 
-mongourl = process.env.MONGOHQ_URL
-if not mongourl?
-  mongourl = process.env.MONGOLAB_URI
-if not mongourl?
-  mongourl = 'mongodb://localhost:27017/default'
+mongourl = process.env.MONGOHQ_URL ? process.env.MONGOLAB_URI ? process.env.MONGOSOUP_URL ? 'mongodb://localhost:27017/default'
 
 # mongo authentication caches
 
@@ -88,7 +89,14 @@ save-app-key-secret-mongo = (new-app-key-secret, callback) ->
 # global variables
 
 root.app_key_secret = null
+if process.env.APP_KEY? and process.env.APP_SECRET?
+  root.app_key_secret = {
+    app_key: process.env.APP_KEY
+    app_secret: process.env.APP_SECRET
+  }
 root.access_token = null
+if process.env.ACCESS_TOKEN?
+  root.access_token = JSON.parse process.env.ACCESS_TOKEN
 root.dapp = null
 root.dclient = null
 
@@ -196,6 +204,7 @@ app.get '/', (req, res) ->
                 root.dclient = root.dapp.client access_token
               if root.access_token?
                 clearInterval root.checkauthorizedprocess
+                console.log 'ACCESS_TOKEN: ' + JSON.stringify(root.access_token)
                 save-access-token-mongo(root.access_token)
           , 1000
 
