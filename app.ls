@@ -170,7 +170,7 @@ sendhtml = (res, sometext) ->
   </html>
   """
 
-showdir = (dirpath, res) ->
+showdir = (dirpath, dclient, res) ->
   #sendhtml res, 'Powered by <a href="https://github.com/gkovacs/dropbox-media-server">Dropbox Media Server</a>'
   dclient.readdir dirpath, (status, reply) ->
     #console.log status
@@ -186,7 +186,7 @@ showdir = (dirpath, res) ->
 app.get '/', (req, res) ->
   getclient (dclient) ->
     if dclient?
-      showdir '/', res
+      showdir '/', dclient, res
       return
     get_app_key_secret (app_key_secret) ->
       if not app_key_secret?
@@ -279,7 +279,7 @@ app.get /^\/file\/(.+)/, (req, res) ->
         return
       if reply.error?
         if reply.error == 'Creating a link for a directory is not allowed.'
-          showdir '/' + filename, res
+          showdir '/' + filename, dclient, res
         else
           res.send 'error for file ' + filename + ': ' + JSON.stringify(reply.error)
         return

@@ -196,7 +196,7 @@
     res.set('Content-Type', 'text/html');
     return res.send("<html>\n<head></head>\n<body>\n" + sometext + "\n</body>\n</html>");
   };
-  showdir = function(dirpath, res){
+  showdir = function(dirpath, dclient, res){
     return dclient.readdir(dirpath, function(status, reply){
       var output, i$, len$, filepath;
       output = [];
@@ -214,7 +214,7 @@
   app.get('/', function(req, res){
     return getclient(function(dclient){
       if (dclient != null) {
-        showdir('/', res);
+        showdir('/', dclient, res);
         return;
       }
       return get_app_key_secret(function(app_key_secret){
@@ -316,7 +316,7 @@
         }
         if (reply.error != null) {
           if (reply.error === 'Creating a link for a directory is not allowed.') {
-            showdir('/' + filename, res);
+            showdir('/' + filename, dclient, res);
           } else {
             res.send('error for file ' + filename + ': ' + JSON.stringify(reply.error));
           }
