@@ -3,6 +3,7 @@ root = exports ? this
 require! {
   express
   dbox
+  htmlspecialchars
   'js-yaml'
 }
 
@@ -181,7 +182,7 @@ app.get '/', (req, res) ->
         for filepath in reply
           if filepath[0] == '/'
             filepath = filepath.slice(1)
-          output.push "<div><a href='/file/#{encodeURI(filepath)}'>#{filepath}</a></div>"
+          output.push """<div><a href="/file/#{encodeURI(filepath)}">#{htmlspecialchars(filepath)}</a></div>"""
         sendhtml res, output.join('')
       return
     get_app_key_secret (app_key_secret) ->
