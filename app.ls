@@ -17,13 +17,13 @@ console.log 'Listening on port ' + app.get('port')
 # http basic authentication
 
 if process.env.PASSWORDS?
+  # force https
+  if process.env.PORT? # is heroku
+    app.use require('force-ssl')
   basicAuth = require 'basic-auth-connect'
   passwords = js-yaml.safeLoad process.env.PASSWORDS
   app.use basicAuth (user, password) ->
     return user? and password? and user.length > 0 and password.length > 0 and passwords[user]? and passwords[user] == password
-  # force https
-  if process.env.PORT? # is heroku
-    app.use require('force-ssl')
 
 # mongo setup
 

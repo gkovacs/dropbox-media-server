@@ -10,14 +10,14 @@
   app.listen(app.get('port'), '0.0.0.0');
   console.log('Listening on port ' + app.get('port'));
   if (process.env.PASSWORDS != null) {
+    if (process.env.PORT != null) {
+      app.use(require('force-ssl'));
+    }
     basicAuth = require('basic-auth-connect');
     passwords = jsYaml.safeLoad(process.env.PASSWORDS);
     app.use(basicAuth(function(user, password){
       return user != null && password != null && user.length > 0 && password.length > 0 && passwords[user] != null && passwords[user] === password;
     }));
-    if (process.env.PORT != null) {
-      app.use(require('force-ssl'));
-    }
   }
   mongo = require('mongodb');
   MongoClient = mongo.MongoClient;
