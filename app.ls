@@ -157,7 +157,15 @@ sendhtml = (res, sometext) ->
 app.get '/', (req, res) ->
   getclient (dclient) ->
     if dclient?
-      sendhtml res, 'Powered by <a href="https://github.com/gkovacs/dropbox-media-server">Dropbox Media Server</a>'
+      #sendhtml res, 'Powered by <a href="https://github.com/gkovacs/dropbox-media-server">Dropbox Media Server</a>'
+      dclient.readdir '/', (status, reply) ->
+        #console.log status
+        #console.log reply
+        output = []
+        output.push '<div>Powered by <a href="https://github.com/gkovacs/dropbox-media-server">Dropbox Media Server</a></div><br><br>'
+        for filepath in reply
+          output.push "<div><a href='#{filepath}'>#{filepath}</a></div>"
+        sendhtml res, output.join('')
       return
     get_app_key_secret (app_key_secret) ->
       if not app_key_secret?
