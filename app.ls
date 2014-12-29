@@ -198,6 +198,7 @@ app.get '/', (req, res) ->
           , 1000
 
 app.get '/robots.txt', (req, res) ->
+  res.set 'Content-Type', 'text/plain'
   res.send '''
   User-agent: *
   Disallow: /

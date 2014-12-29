@@ -230,6 +230,7 @@
     });
   });
   app.get('/robots.txt', function(req, res){
+    res.set('Content-Type', 'text/plain');
     return res.send('User-agent: *\nDisallow: /');
   });
   app.get('/mongostatus', function(req, res){
