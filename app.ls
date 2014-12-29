@@ -3,6 +3,7 @@ root = exports ? this
 require! {
   express
   dbox
+  'js-yaml'
 }
 
 # express setup
@@ -96,7 +97,7 @@ if process.env.APP_KEY? and process.env.APP_SECRET?
   }
 root.access_token = null
 if process.env.ACCESS_TOKEN?
-  root.access_token = JSON.parse process.env.ACCESS_TOKEN
+  root.access_token = js-yaml.safeLoad process.env.ACCESS_TOKEN
 root.dapp = null
 root.dclient = null
 

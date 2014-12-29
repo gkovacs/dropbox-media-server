@@ -4,9 +4,10 @@
   "description": "Node.js server that serves a public folder of media files on Dropbox",
   "main": "app.js",
   "dependencies": {
-    "mongodb": "^1.4.23",
     "dbox": "^0.6.3",
-    "express": "^4.10.6"
+    "express": "^4.10.6",
+    "js-yaml": "^3.2.5",
+    "mongodb": "^1.4.23"
   },
   "devDependencies": {
     "LiveScript": "^1.3.1"
