@@ -170,20 +170,23 @@ sendhtml = (res, sometext) ->
   </html>
   """
 
+showdir = (dirpath, res) ->
+  #sendhtml res, 'Powered by <a href="https://github.com/gkovacs/dropbox-media-server">Dropbox Media Server</a>'
+  dclient.readdir dirpath, (status, reply) ->
+    #console.log status
+    #console.log reply
+    output = []
+    output.push '<div>Powered by <a href="https://github.com/gkovacs/dropbox-media-server">Dropbox Media Server</a></div><br>'
+    for filepath in reply
+      if filepath[0] == '/'
+        filepath = filepath.slice(1)
+      output.push """<div><a href="/file/#{encodeURI(filepath)}">#{htmlspecialchars(filepath)}</a></div>"""
+    sendhtml res, output.join('')
+
 app.get '/', (req, res) ->
   getclient (dclient) ->
     if dclient?
-      #sendhtml res, 'Powered by <a href="https://github.com/gkovacs/dropbox-media-server">Dropbox Media Server</a>'
-      dclient.readdir '/', (status, reply) ->
-        #console.log status
-        #console.log reply
-        output = []
-        output.push '<div>Powered by <a href="https://github.com/gkovacs/dropbox-media-server">Dropbox Media Server</a></div><br>'
-        for filepath in reply
-          if filepath[0] == '/'
-            filepath = filepath.slice(1)
-          output.push """<div><a href="/file/#{encodeURI(filepath)}">#{htmlspecialchars(filepath)}</a></div>"""
-        sendhtml res, output.join('')
+      showdir '/', res
       return
     get_app_key_secret (app_key_secret) ->
       if not app_key_secret?
@@ -275,7 +278,10 @@ app.get /^\/file\/(.+)/, (req, res) ->
         res.send 'no reply for file: ' + filename
         return
       if reply.error?
-        res.send 'error for file ' + filename + ': ' + JSON.stringify(reply.error)
+        if reply.error == 'Creating a link for a directory is not allowed.'
+          showdir '/' + filename, res
+        else
+          res.send 'error for file ' + filename + ': ' + JSON.stringify(reply.error)
         return
       root.cached_paths[filename] = reply
       res.redirect reply.url
