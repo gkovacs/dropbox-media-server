@@ -197,6 +197,12 @@ app.get '/', (req, res) ->
                 save-access-token-mongo(root.access_token)
           , 1000
 
+app.get '/robots.txt', (req, res) ->
+  res.send '''
+  User-agent: *
+  Disallow: /
+  '''
+
 app.get '/mongostatus', (req, res) ->
   get-mongo-db (db) ->
     if db?

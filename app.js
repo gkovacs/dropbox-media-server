@@ -229,6 +229,9 @@
       });
     });
   });
+  app.get('/robots.txt', function(req, res){
+    return res.send('User-agent: *\nDisallow: /');
+  });
   app.get('/mongostatus', function(req, res){
     return getMongoDb(function(db){
       if (db != null) {
