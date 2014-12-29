@@ -307,7 +307,11 @@
         console.log('reply:');
         console.log(reply);
         if (reply == null) {
-          res.send('no such file: ' + filename);
+          res.send('no reply for file: ' + filename);
+          return;
+        }
+        if (reply.error != null) {
+          res.send('error for file ' + filename + ': ' + JSON.stringify(reply.error));
           return;
         }
         root.cached_paths[filename] = reply;

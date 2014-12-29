@@ -271,7 +271,10 @@ app.get /^\/file\/(.+)/, (req, res) ->
       console.log 'reply:'
       console.log reply
       if not reply?
-        res.send 'no such file: ' + filename
+        res.send 'no reply for file: ' + filename
+        return
+      if reply.error?
+        res.send 'error for file ' + filename + ': ' + JSON.stringify(reply.error)
         return
       root.cached_paths[filename] = reply
       res.redirect reply.url
