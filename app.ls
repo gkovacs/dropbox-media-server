@@ -19,13 +19,7 @@ console.log 'Listening on port ' + app.get('port')
 if process.env.PASSWORDS?
   # force https
   if process.env.PORT? # is heroku
-    #app.use require('force-ssl')
-    app.use (req, res, next) ->
-      if req.protocol != 'https' and req.headers['x-forwarded-proto'] != 'https'
-        console.log '=== redirecting ==='
-        console.log req
-        return res.redirect ['https://', req.get('Host'), req.url].join('')
-      return next()
+    app.use require('force-ssl')
   basicAuth = require 'basic-auth-connect'
   passwords = js-yaml.safeLoad process.env.PASSWORDS
   app.use basicAuth (user, password) ->
@@ -273,6 +267,9 @@ app.get /^\/file\/(.+)/, (req, res) ->
       return
     dclient.media '/' + filename, (status, reply) ->
       #console.log reply
+      if not reply?
+        res.send 'no such file: ' + filename
+        return
       root.cached_paths[filename] = reply
       res.redirect reply.url
 
