@@ -183,7 +183,7 @@
         dclient.readdir('/', function(status, reply){
           var output, i$, len$, filepath;
           output = [];
-          output.push('<div>Powered by <a href="https://github.com/gkovacs/dropbox-media-server">Dropbox Media Server</a></div><br><br>');
+          output.push('<div>Powered by <a href="https://github.com/gkovacs/dropbox-media-server">Dropbox Media Server</a></div><br>');
           for (i$ = 0, len$ = reply.length; i$ < len$; ++i$) {
             filepath = reply[i$];
             if (filepath[0] === '/') {

@@ -162,7 +162,7 @@ app.get '/', (req, res) ->
         #console.log status
         #console.log reply
         output = []
-        output.push '<div>Powered by <a href="https://github.com/gkovacs/dropbox-media-server">Dropbox Media Server</a></div><br><br>'
+        output.push '<div>Powered by <a href="https://github.com/gkovacs/dropbox-media-server">Dropbox Media Server</a></div><br>'
         for filepath in reply
           if filepath[0] == '/'
             filepath = filepath.slice(1)
