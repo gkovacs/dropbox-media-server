@@ -4,6 +4,7 @@
   "description": "Node.js server that serves a public folder of media files on Dropbox",
   "main": "app.js",
   "dependencies": {
+    "basic-auth-connect": "^1.0.0",
     "dbox": "^0.6.3",
     "express": "^4.10.6",
     "js-yaml": "^3.2.5",
