@@ -181,7 +181,7 @@ app.get '/', (req, res) ->
         for filepath in reply
           if filepath[0] == '/'
             filepath = filepath.slice(1)
-          output.push "<div><a href='/file/#{filepath}'>#{filepath}</a></div>"
+          output.push "<div><a href='/file/#{encodeURI(filepath)}'>#{filepath}</a></div>"
         sendhtml res, output.join('')
       return
     get_app_key_secret (app_key_secret) ->
@@ -266,7 +266,10 @@ app.get /^\/file\/(.+)/, (req, res) ->
       res.send 'need to login first'
       return
     dclient.media '/' + filename, (status, reply) ->
-      #console.log reply
+      console.log 'status:'
+      console.log status
+      console.log 'reply:'
+      console.log reply
       if not reply?
         res.send 'no such file: ' + filename
         return

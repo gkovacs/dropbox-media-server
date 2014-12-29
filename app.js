@@ -207,7 +207,7 @@
             if (filepath[0] === '/') {
               filepath = filepath.slice(1);
             }
-            output.push("<div><a href='/file/" + filepath + "'>" + filepath + "</a></div>");
+            output.push("<div><a href='/file/" + encodeURI(filepath) + "'>" + filepath + "</a></div>");
           }
           return sendhtml(res, output.join(''));
         });
@@ -302,6 +302,10 @@
         return;
       }
       return dclient.media('/' + filename, function(status, reply){
+        console.log('status:');
+        console.log(status);
+        console.log('reply:');
+        console.log(reply);
         if (reply == null) {
           res.send('no such file: ' + filename);
           return;
