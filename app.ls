@@ -180,7 +180,7 @@ showdir = (dirpath, dclient, res) ->
     for filepath in reply
       if filepath[0] == '/'
         filepath = filepath.slice(1)
-      output.push """<div><a href="/file/#{encodeURI(filepath)}">#{htmlspecialchars(filepath)}</a></div>"""
+      output.push """<div><a href="/f/#{encodeURI(filepath)}">#{htmlspecialchars(filepath)}</a></div>"""
     sendhtml res, output.join('')
 
 app.get '/', (req, res) ->
@@ -255,7 +255,7 @@ app.get '/account', (req, res) ->
 
 root.cached_paths = {}
 
-app.get '/file', (req, res) ->
+app.get '/f', (req, res) ->
   getclient (dclient) ->
     if not dclient?
       res.send 'need to login first'
@@ -263,7 +263,7 @@ app.get '/file', (req, res) ->
     showdir '/', dclient, res
     return
 
-app.get /^\/file\/(.+)/, (req, res) ->
+app.get /^\/f\/(.+)/, (req, res) ->
   # this allow subdirectories, is /file/foo/bar.txt
   # if wanted just flat files, would use '/file/:filename'
   filename = req.params[0]

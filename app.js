@@ -206,7 +206,7 @@
         if (filepath[0] === '/') {
           filepath = filepath.slice(1);
         }
-        output.push("<div><a href=\"/file/" + encodeURI(filepath) + "\">" + htmlspecialchars(filepath) + "</a></div>");
+        output.push("<div><a href=\"/f/" + encodeURI(filepath) + "\">" + htmlspecialchars(filepath) + "</a></div>");
       }
       return sendhtml(res, output.join(''));
     });
@@ -289,7 +289,7 @@
         res.send JSON.stringify reply
   */
   root.cached_paths = {};
-  app.get('/file', function(req, res){
+  app.get('/f', function(req, res){
     return getclient(function(dclient){
       if (dclient == null) {
         res.send('need to login first');
@@ -298,7 +298,7 @@
       showdir('/', dclient, res);
     });
   });
-  app.get(/^\/file\/(.+)/, function(req, res){
+  app.get(/^\/f\/(.+)/, function(req, res){
     var filename;
     filename = req.params[0];
     if (filename == null || filename.length === 0) {

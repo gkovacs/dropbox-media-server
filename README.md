@@ -29,7 +29,7 @@ Visit your site, specify the app\_key and app\_secret, give it authorization, ad
 
 To list the files: /listfiles
 
-To access a file: /file/path/to/file.txt
+To access a file: /f/path/to/file.txt
 
 To see if mongo db has an error: /mongostatus
 
