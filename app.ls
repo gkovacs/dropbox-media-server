@@ -278,10 +278,6 @@ app.get /^\/f\/(.+)/, (req, res) ->
       res.send 'need to login first'
       return
     dclient.media '/' + filename, (status, reply) ->
-      console.log 'status:'
-      console.log status
-      console.log 'reply:'
-      console.log reply
       if not reply?
         res.send 'no reply for file: ' + filename
         return

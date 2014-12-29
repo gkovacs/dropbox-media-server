@@ -315,10 +315,6 @@
         return;
       }
       return dclient.media('/' + filename, function(status, reply){
-        console.log('status:');
-        console.log(status);
-        console.log('reply:');
-        console.log(reply);
         if (reply == null) {
           res.send('no reply for file: ' + filename);
           return;
