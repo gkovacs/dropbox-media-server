@@ -14,6 +14,13 @@ app.set 'port', (process.env.PORT || 5000)
 app.listen app.get('port'), '0.0.0.0'
 console.log 'Listening on port ' + app.get('port')
 
+isprod = process.env.NODE_ENV == 'production'
+
+force-ssl = (req, res, next) ->
+  if req.headers['x-forwarded-proto'] != 'https'
+    return res.redirect ['https://', req.get('Host'), req.url].join('')
+  return next()
+
 # http basic authentication
 
 if process.env.PASSWORDS?
@@ -21,6 +28,9 @@ if process.env.PASSWORDS?
   passwords = js-yaml.safeLoad process.env.PASSWORDS
   app.use basicAuth (user, password) ->
     return user? and password? and user.length > 0 and password.length > 0 and passwords[user]? and passwords[user] == password
+  # force https
+  if isprod
+    app.use force-ssl
 
 # mongo setup
 
