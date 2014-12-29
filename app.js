@@ -11,7 +11,14 @@
   console.log('Listening on port ' + app.get('port'));
   if (process.env.PASSWORDS != null) {
     if (process.env.PORT != null) {
-      app.use(require('force-ssl'));
+      app.use(function(req, res, next){
+        if (req.protocol !== 'https' && req.headers['x-forwarded-proto'] !== 'https') {
+          console.log('=== redirecting ===');
+          console.log(req);
+          return res.redirect(['https://', req.get('Host'), req.url].join(''));
+        }
+        return next();
+      });
     }
     basicAuth = require('basic-auth-connect');
     passwords = jsYaml.safeLoad(process.env.PASSWORDS);
