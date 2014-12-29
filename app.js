@@ -289,6 +289,15 @@
         res.send JSON.stringify reply
   */
   root.cached_paths = {};
+  app.get('/file', function(req, res){
+    return getclient(function(dclient){
+      if (dclient == null) {
+        res.send('need to login first');
+        return;
+      }
+      showdir('/', dclient, res);
+    });
+  });
   app.get(/^\/file\/(.+)/, function(req, res){
     var filename;
     filename = req.params[0];

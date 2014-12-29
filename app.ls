@@ -255,6 +255,14 @@ app.get '/account', (req, res) ->
 
 root.cached_paths = {}
 
+app.get '/file', (req, res) ->
+  getclient (dclient) ->
+    if not dclient?
+      res.send 'need to login first'
+      return
+    showdir '/', dclient, res
+    return
+
 app.get /^\/file\/(.+)/, (req, res) ->
   # this allow subdirectories, is /file/foo/bar.txt
   # if wanted just flat files, would use '/file/:filename'
