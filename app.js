@@ -186,7 +186,10 @@
           output.push('<div>Powered by <a href="https://github.com/gkovacs/dropbox-media-server">Dropbox Media Server</a></div><br><br>');
           for (i$ = 0, len$ = reply.length; i$ < len$; ++i$) {
             filepath = reply[i$];
-            output.push("<div><a href='" + filepath + "'>" + filepath + "</a></div>");
+            if (filepath[0] === '/') {
+              filepath = filepath.slice(1);
+            }
+            output.push("<div><a href='/file/" + filepath + "'>" + filepath + "</a></div>");
           }
           return sendhtml(res, output.join(''));
         });

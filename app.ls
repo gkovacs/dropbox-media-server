@@ -164,7 +164,9 @@ app.get '/', (req, res) ->
         output = []
         output.push '<div>Powered by <a href="https://github.com/gkovacs/dropbox-media-server">Dropbox Media Server</a></div><br><br>'
         for filepath in reply
-          output.push "<div><a href='#{filepath}'>#{filepath}</a></div>"
+          if filepath[0] == '/'
+            filepath = filepath.slice(1)
+          output.push "<div><a href='/file/#{filepath}'>#{filepath}</a></div>"
         sendhtml res, output.join('')
       return
     get_app_key_secret (app_key_secret) ->
