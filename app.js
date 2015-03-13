@@ -206,7 +206,7 @@
         if (filepath[0] === '/') {
           filepath = filepath.slice(1);
         }
-        output.push("<div><a href=\"/f/" + encodeURI(filepath) + "\">" + htmlspecialchars(filepath) + "</a></div>");
+        output.push("<div><a href=\"/f/" + encodeURIComponent(filepath) + "\">" + htmlspecialchars(filepath) + "</a></div>");
       }
       return sendhtml(res, output.join(''));
     });

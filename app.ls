@@ -180,7 +180,7 @@ showdir = (dirpath, dclient, res) ->
     for filepath in reply
       if filepath[0] == '/'
         filepath = filepath.slice(1)
-      output.push """<div><a href="/f/#{encodeURI(filepath)}">#{htmlspecialchars(filepath)}</a></div>"""
+      output.push """<div><a href="/f/#{encodeURIComponent(filepath)}">#{htmlspecialchars(filepath)}</a></div>"""
     sendhtml res, output.join('')
 
 app.get '/', (req, res) ->
@@ -289,4 +289,3 @@ app.get /^\/f\/(.+)/, (req, res) ->
         return
       root.cached_paths[filename] = reply
       res.redirect reply.url
-
