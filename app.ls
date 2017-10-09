@@ -75,11 +75,13 @@ save-access-token-mongo = (new-access-token, callback) ->
 get-app-key-secret-mongo = (callback) ->
   get-dropboxmedia-collection (collection, db) ->
     if not db?
-      callback null
+      if callback?
+        callback()
       return
     collection.findOne {_id: 'appkeysecret'}, (err, result) ->
       if not result?
-        callback null
+        if callback?
+          callback()
         return
       callback JSON.parse(result.appkeysecret)
       db.close()
@@ -87,7 +89,8 @@ get-app-key-secret-mongo = (callback) ->
 save-app-key-secret-mongo = (new-app-key-secret, callback) ->
   get-dropboxmedia-collection (collection, db) ->
     if not db?
-      callback null
+      if callback?
+        callback()
       return
     collection.save {_id: 'appkeysecret', appkeysecret: JSON.stringify(new-app-key-secret)}, (err, result) ->
       if callback?
