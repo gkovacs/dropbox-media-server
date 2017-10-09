@@ -2,10 +2,13 @@ root = exports ? this
 
 require! {
   express
-  dbox
   htmlspecialchars
+  getsecret
   'js-yaml'
 }
+
+Dropbox = require 'dropbox'
+dbx = new Dropbox({accessToken: getsecret('dropbox_access_token')})
 
 # express setup
 
@@ -186,41 +189,24 @@ showdir = (dirpath, dclient, res) ->
       output.push """<div><a href="/f/#{encodeURIComponent(filepath)}">#{htmlspecialchars(filepath)}</a></div>"""
     sendhtml res, output.join('')
 
-app.get '/', (req, res) ->
-  getclient (dclient) ->
-    if dclient?
-      showdir '/', dclient, res
-      return
-    get_app_key_secret (app_key_secret) ->
-      if not app_key_secret?
-        if req.query? and req.query.app_key? and req.query.app_secret?
-          root.app_key_secret = {app_key: req.query.app_key, app_secret: req.query.app_secret}
-          save-app-key-secret-mongo root.app_key_secret
-          res.send '''
-          saved app_key and app_secret
-          '''
-        if not (root.app_key_secret? and root.app_key_secret.app_key? and root.app_key_secret.app_secret?)
-          res.send '''
-          need app_key and app_secret parameters. specify them as: <br>
-          /?app_key=APPKEY&app_secret=APPSECRET <br>
-          visit <a href="https://www.dropbox.com/developers/apps" target="_blank">https://www.dropbox.com/developers/apps</a> to get an app key'''
-        return
-      getdapp (dapp) ->
-        dapp.requesttoken (status, request_token) ->
-          token_url = "https://www.dropbox.com/1/oauth/authorize?oauth_token=#{request_token.oauth_token}"
-          sendhtml res, "<a href=#{token_url}>#{token_url}</a>"
-          root.checkauthorizedprocess = setInterval ->
-            root.dapp.accesstoken request_token, (status, access_token) ->
-              #console.log status
-              #console.log access_token
-              if access_token? and access_token.oauth_token?
-                root.access_token = access_token
-                root.dclient = root.dapp.client access_token
-              if root.access_token?
-                clearInterval root.checkauthorizedprocess
-                console.log 'ACCESS_TOKEN: ' + JSON.stringify(root.access_token)
-                save-access-token-mongo(root.access_token)
-          , 1000
+showdir = (dirpath, res) ->>
+  response = await dbx.filesListFolder({path: dirpath, recursive: true})
+  filepaths = []
+  for fileinfo in response.entries
+    if fileinfo['.tag'] != 'file'
+      continue
+    filepath = fileinfo.path_display
+    if filepath[0] == '/'
+      filepath = filepath.slice(1)
+    filepaths.push filepath
+  filepaths.sort()
+  output = []
+  for filepath in filepaths
+    output.push """<div><a href="/f/#{encodeURIComponent(filepath)}">#{htmlspecialchars(filepath)}</a></div>"""
+  sendhtml res, output.join('')
+
+app.get '/', (req, res) ->>
+  showdir '', res
 
 app.get '/robots.txt', (req, res) ->
   res.set 'Content-Type', 'text/plain'
@@ -236,15 +222,18 @@ app.get '/mongostatus', (req, res) ->
     else
       res.send 'mongo not working'
 
-app.get '/listfiles', (req, res) ->
-  getclient (dclient) ->
-    if not dclient?
-      res.send 'need to login first'
-      return
-    dclient.readdir '/', (status, reply) ->
-      #console.log status
-      #console.log reply
-      res.send JSON.stringify reply
+app.get '/listfiles', (req, res) ->>
+  response = await dbx.filesListFolder({path: '', recursive: true})
+  filepaths = []
+  for fileinfo in response.entries
+    if fileinfo['.tag'] != 'file'
+      continue
+    filepath = fileinfo.path_display
+    if filepath[0] == '/'
+      filepath = filepath.slice(1)
+    filepaths.push filepath
+  filepaths.sort()
+  res.send JSON.stringify filepaths
 
 /*
 app.get '/account', (req, res) ->
@@ -258,37 +247,24 @@ app.get '/account', (req, res) ->
 
 root.cached_paths = {}
 
-app.get '/f', (req, res) ->
-  getclient (dclient) ->
-    if not dclient?
-      res.send 'need to login first'
-      return
-    showdir '/', dclient, res
-    return
+app.get '/f', (req, res) ->>
+  showdir '', res
 
-app.get /^\/f\/(.+)/, (req, res) ->
+app.get /^\/f\/(.+)/, (req, res) ->>
   # this allow subdirectories, is /file/foo/bar.txt
   # if wanted just flat files, would use '/file/:filename'
   filename = req.params[0]
   if not filename? or filename.length == 0
     res.send 'need filename'
     return
-  if root.cached_paths[filename]? and new Date(root.cached_paths[filename].expires).getTime() > Date.now() # not expired yet
-    res.redirect root.cached_paths[filename].url
+  current_time = Date.now()
+  if root.cached_paths[filename]? and current_time < root.cached_paths[filename].timestamp + (1000*3600*3.9)
+    res.redirect root.cached_paths[filename].link
     return
-  getclient (dclient) ->
-    if not dclient?
-      res.send 'need to login first'
-      return
-    dclient.media '/' + filename, (status, reply) ->
-      if not reply?
-        res.send 'no reply for file: ' + filename
-        return
-      if reply.error?
-        if reply.error == 'Creating a link for a directory is not allowed.'
-          showdir '/' + filename, dclient, res
-        else
-          res.send 'error for file ' + filename + ': ' + JSON.stringify(reply.error)
-        return
-      root.cached_paths[filename] = reply
-      res.redirect reply.url
+  fileinfo = await dbx.filesGetTemporaryLink {path: '/' + filename}
+  root.cached_paths[filename] = {
+    link: fileinfo.link
+    timestamp: current_time
+  }
+  res.redirect fileinfo.link
+  return
