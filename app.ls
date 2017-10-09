@@ -176,19 +176,6 @@ sendhtml = (res, sometext) ->
   </html>
   """
 
-showdir = (dirpath, dclient, res) ->
-  #sendhtml res, 'Powered by <a href="https://github.com/gkovacs/dropbox-media-server">Dropbox Media Server</a>'
-  dclient.readdir dirpath, (status, reply) ->
-    #console.log status
-    #console.log reply
-    output = []
-    output.push '<div>Powered by <a href="https://github.com/gkovacs/dropbox-media-server">Dropbox Media Server</a></div><br>'
-    for filepath in reply
-      if filepath[0] == '/'
-        filepath = filepath.slice(1)
-      output.push """<div><a href="/f/#{encodeURIComponent(filepath)}">#{htmlspecialchars(filepath)}</a></div>"""
-    sendhtml res, output.join('')
-
 showdir = (dirpath, res) ->>
   response = await dbx.filesListFolder({path: dirpath, recursive: true})
   filepaths = []
@@ -201,6 +188,7 @@ showdir = (dirpath, res) ->>
     filepaths.push filepath
   filepaths.sort()
   output = []
+  output.push '<div>Powered by <a href="https://github.com/gkovacs/dropbox-media-server">Dropbox Media Server</a> by <a href="http://www.gkovacs.com/">Geza Kovacs</a></div><br>'
   for filepath in filepaths
     output.push """<div><a href="/f/#{encodeURIComponent(filepath)}">#{htmlspecialchars(filepath)}</a></div>"""
   sendhtml res, output.join('')

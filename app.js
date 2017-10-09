@@ -206,21 +206,6 @@
     res.set('Content-Type', 'text/html');
     return res.send("<html>\n<head></head>\n<body>\n" + sometext + "\n</body>\n</html>");
   };
-  showdir = function(dirpath, dclient, res){
-    return dclient.readdir(dirpath, function(status, reply){
-      var output, i$, len$, filepath;
-      output = [];
-      output.push('<div>Powered by <a href="https://github.com/gkovacs/dropbox-media-server">Dropbox Media Server</a></div><br>');
-      for (i$ = 0, len$ = reply.length; i$ < len$; ++i$) {
-        filepath = reply[i$];
-        if (filepath[0] === '/') {
-          filepath = filepath.slice(1);
-        }
-        output.push("<div><a href=\"/f/" + encodeURIComponent(filepath) + "\">" + htmlspecialchars(filepath) + "</a></div>");
-      }
-      return sendhtml(res, output.join(''));
-    });
-  };
   showdir = async function(dirpath, res){
     var response, filepaths, i$, ref$, len$, fileinfo, filepath, output;
     response = (await dbx.filesListFolder({
@@ -241,6 +226,7 @@
     }
     filepaths.sort();
     output = [];
+    output.push('<div>Powered by <a href="https://github.com/gkovacs/dropbox-media-server">Dropbox Media Server</a> by <a href="http://www.gkovacs.com/">Geza Kovacs</a></div><br>');
     for (i$ = 0, len$ = filepaths.length; i$ < len$; ++i$) {
       filepath = filepaths[i$];
       output.push("<div><a href=\"/f/" + encodeURIComponent(filepath) + "\">" + htmlspecialchars(filepath) + "</a></div>");
@@ -318,32 +304,4 @@
     };
     res.redirect(fileinfo.link);
   });
-  /*
-  app.get /^\/f\/(.+)/, (req, res) ->>
-    # this allow subdirectories, is /file/foo/bar.txt
-    # if wanted just flat files, would use '/file/:filename'
-    filename = req.params[0]
-    if not filename? or filename.length == 0
-      res.send 'need filename'
-      return
-    if root.cached_paths[filename]? and new Date(root.cached_paths[filename].expires).getTime() > Date.now() # not expired yet
-      res.redirect root.cached_paths[filename].url
-      return
-    getclient (dclient) ->
-      if not dclient?
-        res.send 'need to login first'
-        return
-      dclient.media '/' + filename, (status, reply) ->
-        if not reply?
-          res.send 'no reply for file: ' + filename
-          return
-        if reply.error?
-          if reply.error == 'Creating a link for a directory is not allowed.'
-            showdir '/' + filename, dclient, res
-          else
-            res.send 'error for file ' + filename + ': ' + JSON.stringify(reply.error)
-          return
-        root.cached_paths[filename] = reply
-        res.redirect reply.url
-  */
 }).call(this);
