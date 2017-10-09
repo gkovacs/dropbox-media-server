@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Node.js server that serves a public folder of media files on Dropbox",
   "main": "app.js",
+  "engines": {
+    "node": "8.x"
+  },
   "dependencies": {
     "basic-auth-connect": "^1.0.0",
     "dropbox": "^2.5.11",
